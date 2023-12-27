@@ -1,123 +1,143 @@
 //////////////////////////////////////////////////
-// CANVAS SIZE
-// Good function to create canvas and resize functions
+// Object for creation and real-time resize of canvas
+// Good function to create canvas and resize functions. I use this in all examples.
 const C = {
-    loaded: false,
-    prop() {return this.height/this.width},
-    isLandscape() {return window.innerHeight <= window.innerWidth * this.prop()},
-    resize () {
-        if (this.isLandscape()) {
-            document.getElementById(this.css).style.height = "100%";
-            document.getElementById(this.css).style.removeProperty('width');
-        } else {
-            document.getElementById(this.css).style.removeProperty('height');
-            document.getElementById(this.css).style.width = "100%";
-        }
-    },
-    setSize(w,h,p,css) {
-        this.width = w, this.height = h, this.pD = p, this.css = css;
-    },
-    createCanvas() {
-        this.main = createCanvas(this.width,this.height,WEBGL), pixelDensity(this.pD), this.main.id(this.css), this.resize();
+  loaded: false,
+  prop() {
+    return this.height / this.width;
+  },
+  isLandscape() {
+    return window.innerHeight <= window.innerWidth * this.prop();
+  },
+  resize() {
+    if (this.isLandscape()) {
+      console.log("yes");
+      document.getElementById(this.css).style.height = "100%";
+      document.getElementById(this.css).style.removeProperty("width");
+    } else {
+      document.getElementById(this.css).style.removeProperty("height");
+      document.getElementById(this.css).style.width = "100%";
     }
+  },
+  setSize(w, h, p, css) {
+    (this.width = w), (this.height = h), (this.pD = p), (this.css = css);
+  },
+  createCanvas() {
+    (this.main = createCanvas(this.width, this.height, WEBGL)),
+      pixelDensity(this.pD),
+      this.main.id(this.css),
+      this.resize();
+  },
 };
-// SET CANVAS SIZE: width, height, pixelDensity, html_id for the canvas
-// Here I'm working with mm units, so I want a big pixelDensity for high-res.
-C.setSize(250,250,8,'mainCanvas')
+C.setSize(1500, 2000, 1, "mainCanvas");
 
-function windowResized () {
-    C.resize();
+function windowResized() {
+  C.resize();
 }
-
-// YOU CAN CREATE YOU OWN BRUSHES
-brush.add("watercolor", {
-    type: "image",       // this is the TIP TYPE: choose standard / spray / marker / custom / image
-    weight: 10,          // Base weight of the brush tip
-    vibration: 2,        // Vibration of the lines, spread
-    definition: 0.5,     // Between 0 and 1
-    quality: 8,          // + quality = more continuous line
-    opacity: 20,         // Base opacity of the brush (this will be affected by pressure)
-    spacing: 1.5,          // Spacing between the points that compose the brush stroke
-    blend: true,         // Activate / Disable realistic color mixing. By default, this is active for marker-custom-image brushes 
-    pressure: {
-        type: "custom",                       // "standard" or "custom". Use "custom"" for custom pressure curves. Use standard for simple gauss bell curve
-        //curve: [0.15,0.2],                  // If "standard", pick a and b values for the gauss curve. a is max horizontal mvt of the bell, b changes the slope
-        curve: function (x) {return 1-x},     // If "custom", define the curve function with a curve equation from x = 0 to x = 1, returning values from 0 to 1
-        min_max: [0.5,1.2]                    // For both cases, define min and max pressure (reverse for inverted presure)
-    },
-    // if you select the a custom type brush, define the tip geometry here. Use 0,0 as center of tip. If not, you can remove these lines. 
-    tip: function () {
-        brush.mask.rotate(45),brush.mask.rect(-1.5,-1.5,3,3),brush.mask.rect(1.5,1.5,1,1); // in this example, the tip would be two squares, rotated 45 degrees
-    },
-    // if you select the image type brush, link your image below. If not, you can remove these lines.
-    image: {
-        src: "./brush_tips/brush.jpg",
-    },
-    // For "custom" and "image" types, you can define the tip angle rotation here.
-    rotate: "natural", // "none" disables rotation | "natural" follows the direction of the stroke | "random"
-})
 
 //////////////////////////////////////////////////
-// P5 FUNCTIONS
+// The example really starts here
 
-function preload() {
-    // If you are going to use custom image brush tips, include this in preload!
-    brush.preload();
+let palette = [
+  "#7b4800",
+  "#002185",
+  "#003c32",
+  "#fcd300",
+  "#ff2702",
+  "#6b9404",
+];
+
+function red(color) {
+  return parseInt(color.slice(1).slice(0, 2), 16) / 255;
 }
 
-let palette = ["#002185", "#fcd300", "#ff2702", "#6b9404"]
+function green() {
+  return parseInt(color.slice(1).slice(2, 4), 16) / 255;
+}
 
-let x_values = []
-let y_values = []
+function blue() {
+  return parseInt(color.slice(1).slice(4, 6), 16) / 255;
+}
 
-function setup () {
+function setup() {
+  C.createCanvas();
+  angleMode(DEGREES);
+  background("#fffceb");
 
-    C.createCanvas()
-    background("#e2e7dc")
-    angleMode(RADIANS)
+  translate(-width / 2, -height / 2);
 
-    translate(-width/2,-height/2)
-    
-    for (let i = 0; i < 5; i++) {
-        x_values[i] = random(width)
-        y_values[i] = random(width)
+  // We create a grid here
+  //   let num_cols = 12;
+  //   let num_rows = 6;
+  let num_cols = 3;
+  let num_rows = 2;
+  //   let num_cols = 1;
+  //   let num_rows = 1;
+  let border = 300;
+  let col_size = (width - border) / num_cols;
+  let row_size = (height - border) / num_rows;
+
+  // We define the brushes for the hatches, and the brushes for the strokes
+  let hatch_brushes = ["marker", "marker2"];
+  let stroke_brushes = ["2H", "HB", "charcoal"];
+
+  // Test Different Flowfields here: "zigzag", "seabed", "curved", "truncated"
+  //   brush.field("truncated");
+  brush.noField();
+  // You can also disable field completely with brush.noField()
+
+  //   brush.setHatch(random(hatch_brushes), random(palette));
+  brush.rect(0, 0, 1, 1, false);
+
+  brush.noStroke();
+
+  const startTime = performance.now();
+
+  //   randomSeed(99);
+
+  // We create the grid here
+  for (let i = 0; i < num_rows; i++) {
+    for (let j = 0; j < num_cols; j++) {
+      // We fill 10% of the cells
+      //   if (random() < 0.1) {
+      if (true) {
+        // Set Fill
+        brush.fill(random(palette), random(60, 100));
+        brush.bleed(random(0.03, 0.05));
+        brush.fillTexture(0.55, 0.8);
+      }
+
+      // We stroke + hatch the remaining
+      else {
+        // Set Stroke
+        brush.set(random(stroke_brushes), random(palette));
+
+        // Set Hatch
+        // You set color and brush with .setHatch(brush_name, color)
+        brush.setHatch(random(hatch_brushes), random(palette));
+        // You set hatch params with .hatch(distance_between_lines, angle, options: see reference)
+        brush.hatch(random(10, 60), random(0, 180), {
+          rand: 0,
+          continuous: false,
+          gradient: false,
+        });
+      }
+
+      // We draw the rectangular grid here
+      brush.rect(
+        border / 2 + col_size * j,
+        border / 2 + row_size * i,
+        col_size,
+        row_size,
+        false
+      );
+
+      // Reset states for next cell
+      brush.noStroke();
+      brush.noFill();
+      brush.noHatch();
     }
-    
-    brush.field("seabed")
-    // STANDARD PALETTE TEST
-    let i = 0
-    for (let b of brush.box()) {
-            brush.set(b,random(palette),1)
-            brush.flowLine(30,60+i*10,195,0)
-        i++
-    }
-    
-}
-
-function draw() {
-
-    /*
-    background("#e2e7dc")
-    translate(-width/2,-height/2)
-    strokeWeight(2)
-    brush.fill("#ff2702",70)
-    brush.bleed(0.2)
-    brush.beginShape(0 + frameCount * 0.01)
-        for (let i = 0; i < 5; i++) {
-            stroke(palette[i])
-            point(x_values[i],y_values[i])
-            brush.vertex(x_values[i],y_values[i])
-        }
-    randomSeed(12133)
-    brush.endShape(CLOSE)
-
-    noLoop()
-    */
-}
-
-function mouseDragged() {
-    loop()
-    frameRate(10)
-    x_values[0] = mouseX
-    y_values[0] = mouseY
+  }
+  const endTime = performance.now();
+  console.log(endTime - startTime);
 }
