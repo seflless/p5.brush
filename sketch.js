@@ -32,7 +32,9 @@ const C = {
 C.setSize(window.innerWidth, window.innerHeight, 1, "mainCanvas");
 
 function windowResized() {
-  C.resize();
+  console.log("resized");
+  C.setSize(window.innerWidth, window.innerHeight, 1, "mainCanvas");
+  // C.resize();
 }
 
 //////////////////////////////////////////////////
