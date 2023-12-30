@@ -37,7 +37,19 @@ function windowResized() {
 
 //////////////////////////////////////////////////
 // The example really starts here
-
+let brushes = [
+  "pen",
+  "rotring",
+  "2B",
+  "HB",
+  "2H",
+  "cpencil",
+  "charcoal",
+  "hatch_brush",
+  "spray",
+  "marker",
+  "marker2",
+];
 let palette = [
   "#7b4800",
   "#002185",
@@ -84,8 +96,13 @@ function onPointerMove(event) {
     const alreadyAdded = lastRect !== null;
 
     if (!alreadyAdded) {
-      lastRect = { fill: palette[paletteIndex] };
-      paletteIndex = (paletteIndex + 1) % palette.length;
+      const paletteNext = (paletteIndex + 1) % palette.length;
+      lastRect = {
+        fill: palette[paletteIndex],
+        stroke: palette[paletteNext],
+        brush: random(brushes),
+      };
+      paletteIndex = paletteNext;
       rects.push(lastRect);
     }
 
@@ -190,8 +207,13 @@ function draw() {
   // brush.fill(random(palette), random(60, 100));
 
   for (let rect of rects) {
-    brush.fill(random(palette), random(60, 100));
-    brush.bleed(random(0.03, 0.05));
+    // brush.set("pen", rect.fill, 10);
+    // brush.set(rect.brush, rect.fill, 1);
+    brush.set("marker", rect.fill, 0.5);
+
+    // brush.scaleBrushes(3.5);
+    brush.fill(rect.fill, random(60, 100));
+    brush.bleed(random(0.03, 0.1));
     brush.fillTexture(0.55, 0.8);
     brush.rect(rect.x, rect.y, rect.width, rect.height, false);
   }
