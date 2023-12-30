@@ -1,7 +1,9 @@
-html, body {
+html,
+body {
   height: 100%;
+  touch-action: none;
 }
-  
+
 body {
   overflow: hidden;
   padding: 0;
@@ -9,19 +11,28 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  font-family: Courier, monospace;
 }
-  
+
 #mainCanvas {
-  position: absolute; 
-  z-index: 0; 
-  margin: auto; 
-  top: 0; 
-  left: 0; 
-  bottom: 0; 
-  right: 0; 
+  position: absolute;
+  z-index: 0;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
   background-color: transparent;
 }
 
 #p5_loading {
-  display:none;
+  display: none;
+}
+
+h1 {
+  font-size: 24px;
+  bottom: 0px;
+  position: fixed;
+  z-index: 10;
+  bottom: 20px;
 }
