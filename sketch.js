@@ -69,7 +69,7 @@ function setup() {
 
 let startDragPoint = null;
 let lastDragPoint = null;
-let rects = [{ x: 250, y: 250, width: 500, height: 500 }];
+let rects = [];
 let lastRect = null;
 function onPointerDown(event) {
   startDragPoint = { x: event.clientX, y: event.clientY };
