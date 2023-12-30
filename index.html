@@ -23,9 +23,18 @@
           <option value="charcoal">Charcoal</option>
           <option value="hatch_brush">Hatch Brush</option>
           <option value="spray">Spray</option>
-          <option value="marker">Marker</option>
-          <option selected value="marker2">Marker 2</option>
+          <option selected value="marker">Marker</option>
+          <option value="marker2">Marker 2</option>
         </select>
+        <label for="bleed">Draw Strokes</label>
+        <input
+          type="range"
+          id="bleed"
+          min="0.03"
+          max="0.08"
+          step="0.01"
+          value="0.07"
+        />
       </span>
     </div>
     <script src="./sketch.js"></script>

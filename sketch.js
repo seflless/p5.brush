@@ -37,6 +37,9 @@ function windowResized() {
   // C.resize();
 }
 
+const bleedRange = document.getElementById("bleed");
+console.log(bleedRange);
+
 //////////////////////////////////////////////////
 // The example really starts here
 let brushes = [
@@ -54,7 +57,7 @@ let brushes = [
 ];
 
 const strokeBrushSelection = document.getElementById("stroke-brush");
-console.log(strokeBrushSelection);
+// console.log(strokeBrushSelection);
 let palette = [
   "#7b4800",
   "#002185",
@@ -210,7 +213,7 @@ function draw() {
   // }
 
   // brush.fill(random(palette), random(60, 100));
-
+  const bleed = parseFloat(bleedRange.value);
   for (let rect of rects) {
     // brush.set("pen", rect.fill, 10);
     // brush.set(rect.brush, rect.fill, 1);
@@ -219,8 +222,9 @@ function draw() {
     }
 
     // brush.scaleBrushes(3.5);
+    console.log();
     brush.fill(rect.fill, random(60, 100));
-    brush.bleed(random(0.03, 0.1));
+    brush.bleed(bleed);
     brush.fillTexture(0.55, 0.8);
     brush.rect(rect.x, rect.y, rect.width, rect.height, false);
   }
