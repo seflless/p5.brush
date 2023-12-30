@@ -8,7 +8,26 @@
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <h1>Click-drag to Create Rectangles</h1>
+    <div id="tools">
+      <h1>Click-drag to Create Rectangles</h1>
+      <span>
+        <label for="stroke-brush">Draw Strokes</label>
+        <select id="stroke-brush">
+          <option value="none">None</option>
+          <option value="pen">Pen</option>
+          <option value="rotring">Rotring</option>
+          <option value="2B">2B</option>
+          <option value="HB">HB</option>
+          <option value="2H">2H</option>
+          <option value="cpencil">Pencil</option>
+          <option value="charcoal">Charcoal</option>
+          <option value="hatch_brush">Hatch Brush</option>
+          <option value="spray">Spray</option>
+          <option value="marker">Marker</option>
+          <option selected value="marker2">Marker 2</option>
+        </select>
+      </span>
+    </div>
     <script src="./sketch.js"></script>
   </body>
 </html>

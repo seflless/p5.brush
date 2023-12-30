@@ -29,10 +29,17 @@ body {
   display: none;
 }
 
-h1 {
-  font-size: 24px;
-  bottom: 0px;
+#tools {
+  width: 500px;
   position: fixed;
   z-index: 10;
   bottom: 20px;
+  display: flex;
+  flex-direction: column;
+
+  align-content: start;
+  align-items: center;
+}
+h1 {
+  font-size: 24px;
 }

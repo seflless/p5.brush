@@ -52,6 +52,9 @@ let brushes = [
   "marker",
   "marker2",
 ];
+
+const strokeBrushSelection = document.getElementById("stroke-brush");
+console.log(strokeBrushSelection);
 let palette = [
   "#7b4800",
   "#002185",
@@ -211,7 +214,9 @@ function draw() {
   for (let rect of rects) {
     // brush.set("pen", rect.fill, 10);
     // brush.set(rect.brush, rect.fill, 1);
-    brush.set("marker", rect.fill, 0.5);
+    if (strokeBrushSelection.value !== "none") {
+      brush.set(strokeBrushSelection.value, rect.fill, 0.5);
+    }
 
     // brush.scaleBrushes(3.5);
     brush.fill(rect.fill, random(60, 100));
