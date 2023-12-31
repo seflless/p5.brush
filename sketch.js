@@ -1,3 +1,49 @@
+let startDragPoint = null;
+let lastDragPoint = null;
+let rects = [];
+let lastRect = null;
+function onPointerDown(event) {
+  startDragPoint = { x: event.clientX, y: event.clientY };
+}
+
+function onPointerMove(event) {
+  if (startDragPoint) {
+    lastDragPoint = { x: event.clientX, y: event.clientY };
+
+    // console.log(startDragPoint);
+    // console.log(latestDragPoint);
+    const alreadyAdded = lastRect !== null;
+
+    if (!alreadyAdded) {
+      const paletteNext = (paletteIndex + 1) % palette.length;
+      lastRect = {
+        fill: palette[paletteIndex],
+        stroke: palette[paletteNext],
+        brush: random(brushes),
+        initializing: true,
+      };
+      paletteIndex = paletteNext;
+      rects.push(lastRect);
+    }
+
+    lastRect.x = Math.min(startDragPoint.x, lastDragPoint.x);
+    lastRect.y = Math.min(startDragPoint.y, lastDragPoint.y);
+    lastRect.width = Math.abs(lastDragPoint.x - startDragPoint.x);
+    lastRect.height = Math.abs(lastDragPoint.y - startDragPoint.y);
+
+    console.log(rect);
+  }
+}
+
+function onPointerUp() {
+  startDragPoint = null;
+  lastDragPoint = null;
+  lastRect.initializing = false;
+  lastRect.finishing = true;
+  lastRect = null;
+  // render();
+}
+
 //////////////////////////////////////////////////
 // Object for creation and real-time resize of canvas
 // Good function to create canvas and resize functions. I use this in all examples.
@@ -27,6 +73,11 @@ const C = {
       pixelDensity(this.pD),
       this.main.id(this.css),
       this.resize();
+
+    const canvas = document.getElementById("mainCanvas");
+    canvas.addEventListener("pointerdown", onPointerDown);
+    canvas.addEventListener("pointermove", onPointerMove);
+    canvas.addEventListener("pointerup", onPointerUp);
   },
 };
 C.setSize(window.innerWidth, window.innerHeight, 1, "mainCanvas");
@@ -38,6 +89,10 @@ function windowResized() {
 }
 
 const bleedRange = document.getElementById("bleed");
+
+function getBleed() {
+  return parseFloat(bleedRange.value);
+}
 console.log(bleedRange);
 
 //////////////////////////////////////////////////
@@ -86,54 +141,9 @@ function setup() {
 
   // render();
 }
-
-let startDragPoint = null;
-let lastDragPoint = null;
-let rects = [];
-let lastRect = null;
-function onPointerDown(event) {
-  startDragPoint = { x: event.clientX, y: event.clientY };
-}
-
-function onPointerMove(event) {
-  if (startDragPoint) {
-    lastDragPoint = { x: event.clientX, y: event.clientY };
-
-    // console.log(startDragPoint);
-    // console.log(latestDragPoint);
-    const alreadyAdded = lastRect !== null;
-
-    if (!alreadyAdded) {
-      const paletteNext = (paletteIndex + 1) % palette.length;
-      lastRect = {
-        fill: palette[paletteIndex],
-        stroke: palette[paletteNext],
-        brush: random(brushes),
-      };
-      paletteIndex = paletteNext;
-      rects.push(lastRect);
-    }
-
-    lastRect.x = Math.min(startDragPoint.x, lastDragPoint.x);
-    lastRect.y = Math.min(startDragPoint.y, lastDragPoint.y);
-    lastRect.width = Math.abs(lastDragPoint.x - startDragPoint.x);
-    lastRect.height = Math.abs(lastDragPoint.y - startDragPoint.y);
-
-    console.log(rect);
-  }
-}
-
-function onPointerUp() {
-  startDragPoint = null;
-  lastDragPoint = null;
-  lastRect = null;
-  // render();
-}
-
-document.addEventListener("pointerdown", onPointerDown);
-document.addEventListener("pointermove", onPointerMove);
-document.addEventListener("pointerup", onPointerUp);
-
+let bleedAnimated = getBleed();
+let bleedAnimationCoefficient = 0.65;
+// let bleedAnimationCoefficient = 1;
 function draw() {
   background("#fffceb");
 
@@ -212,8 +222,19 @@ function draw() {
   //   }
   // }
 
+  const editing = rects.find((rect) => rect.initializing);
+
+  if (editing) {
+    bleedAnimated = 0;
+  } else {
+    bleedAnimated =
+      bleedAnimated + (getBleed() - bleedAnimated) * bleedAnimationCoefficient;
+  }
+
+  console.log(bleedAnimated);
+
   // brush.fill(random(palette), random(60, 100));
-  const bleed = parseFloat(bleedRange.value);
+  const bleed = getBleed();
   for (let rect of rects) {
     // brush.set("pen", rect.fill, 10);
     // brush.set(rect.brush, rect.fill, 1);
@@ -222,9 +243,20 @@ function draw() {
     }
 
     // brush.scaleBrushes(3.5);
-    console.log();
+    // console.log();
     brush.fill(rect.fill, random(60, 100));
-    brush.bleed(bleed);
+    if (rect.initializing || rect.finishing) {
+      // if (editing) {
+      brush.bleed(bleedAnimated);
+      if (Math.abs(bleedAnimated - getBleed()) < 0.0001) {
+        rect.finishing = false;
+      }
+      // brush.bleed(0);
+    } else {
+      brush.bleed(bleed);
+    }
+    // brush.bleed(bleedAnimated);
+
     brush.fillTexture(0.55, 0.8);
     brush.rect(rect.x, rect.y, rect.width, rect.height, false);
   }

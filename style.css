@@ -2,6 +2,7 @@ html,
 body {
   height: 100%;
   touch-action: none;
+  font-size: 1.3em;
 }
 
 body {
@@ -23,6 +24,7 @@ body {
   bottom: 0;
   right: 0;
   background-color: transparent;
+  cursor: crosshair;
 }
 
 #p5_loading {
@@ -30,10 +32,11 @@ body {
 }
 
 #tools {
-  width: 500px;
+  width: 800px;
+  max-width: 100%;
   position: fixed;
   z-index: 10;
-  bottom: 20px;
+  bottom: 40px;
   display: flex;
   flex-direction: column;
 
@@ -42,4 +45,18 @@ body {
 }
 h1 {
   font-size: 24px;
+}
+
+select {
+  font-size: 0.8em;
+}
+
+#bleed {
+  transform: scale(1.5);
+  transform-origin: left;
+}
+
+#tools select,
+#tools input {
+  cursor: pointer;
 }
