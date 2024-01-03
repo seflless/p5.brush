@@ -88,6 +88,12 @@ function windowResized() {
   // C.resize();
 }
 
+const brushSize = document.getElementById("brush-size");
+
+// brushSize.addEventListener("input", () => {
+//   console.log(brushSize.value);
+// });
+
 const bleedRange = document.getElementById("bleed");
 
 function getBleed() {
@@ -145,7 +151,8 @@ let bleedAnimated = getBleed();
 let bleedAnimationCoefficient = 0.65;
 // let bleedAnimationCoefficient = 1;
 function draw() {
-  background("#fffceb");
+  // background("#fffceb");
+  background("#fffced");
 
   translate(-width / 2, -height / 2);
   // console.log("draw");
@@ -239,7 +246,8 @@ function draw() {
     // brush.set("pen", rect.fill, 10);
     // brush.set(rect.brush, rect.fill, 1);
     if (strokeBrushSelection.value !== "none") {
-      brush.set(strokeBrushSelection.value, rect.fill, 0.5);
+      const brushSizeFloat = parseFloat(brushSize.value);
+      brush.set(strokeBrushSelection.value, rect.fill, brushSizeFloat);
     }
 
     // brush.scaleBrushes(3.5);

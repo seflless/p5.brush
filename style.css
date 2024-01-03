@@ -32,7 +32,7 @@ body {
 }
 
 #tools {
-  width: 800px;
+  /* width: 800px; */
   max-width: 100%;
   position: fixed;
   z-index: 10;
@@ -40,9 +40,17 @@ body {
   display: flex;
   flex-direction: column;
 
-  align-content: start;
+  align-content: center;
   align-items: center;
 }
+
+#tools > span {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
 h1 {
   font-size: 24px;
 }
@@ -51,7 +59,8 @@ select {
   font-size: 0.8em;
 }
 
-#bleed {
+#bleed,
+#brush-size {
   transform: scale(1.5);
   transform-origin: left;
 }
@@ -59,4 +68,9 @@ select {
 #tools select,
 #tools input {
   cursor: pointer;
+  margin: 20px 0px;
+}
+
+#tools #bleed {
+  margin: 20px 50px 20px 0px;
 }
